@@ -1,0 +1,18 @@
+package templates
+
+import "escrow/internal/model"
+
+templ UploadFile(contractID string, user *model.User) {
+	@Layout(user, "Upload Deliverable") {
+		<div class="upload-form">
+			<h1>Upload Deliverable</h1>
+			<form action={ templ.URL("/contracts/" + contractID + "/deliver") } method="POST" enctype="multipart/form-data">
+				<label>
+					File
+					<input type="file" name="file" required>
+				</label>
+				<button type="submit" class="btn btn-primary">Upload</button>
+			</form>
+		</div>
+	}
+}

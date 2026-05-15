@@ -1,0 +1,50 @@
+package templates
+
+import (
+	"escrow/internal/model"
+	"fmt"
+	"time"
+)
+
+templ ListContracts(contracts []ContractListItem, user *model.User) {
+	@Layout(user, "Dashboard") {
+		<div class="dashboard">
+			<h1>Your Contracts</h1>
+			if len(contracts) == 0 {
+				<div class="empty-state">
+					<p>No contracts yet.</p>
+					<a href="/contracts/new" class="btn btn-primary">Create Your First Contract</a>
+				</div>
+			} else {
+				<div class="contract-list">
+					for _, c := range contracts {
+						<a href={ templ.URL(fmt.Sprintf("/contracts/%s", c.ID)) } class="contract-card">
+							<div class="contract-card-header">
+								<h3>{ c.Title }</h3>
+								<span class="state-badge state-{ c.State }">{ formatState(c.State) }</span>
+							</div>
+							<div class="contract-card-body">
+								<span>Client: { c.ClientName }</span>
+								<span>Freelancer: { c.FreelancerName }</span>
+								<span class="amount">{ formatAmount(c.Amount) }</span>
+							</div>
+							<div class="contract-card-footer">
+								<span class="date">{ c.CreatedAt.Format("Jan 2, 2006") }</span>
+							</div>
+						</a>
+					}
+				</div>
+			}
+		</div>
+	}
+}
+
+type ContractListItem struct {
+	ID             string
+	Title          string
+	State          string
+	Amount         float64
+	CreatedAt      time.Time
+	ClientName     string
+	FreelancerName string
+}

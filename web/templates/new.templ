@@ -1,0 +1,215 @@
+package templates
+
+templ NewContract(errors map[string]string) {
+	@Layout(nil, "New Contract") {
+		<div class="contract-form" x-data="contractForm()">
+			<h1>New Escrow Contract</h1>
+			<div class="progress-bar">
+				<div class="progress-fill" :style="'width: ' + progress + '%'"></div>
+			</div>
+			<div class="progress-steps">
+				<span class="step" :class="{ active: section === 1 }">1. Parties & Price</span>
+				<span class="step" :class="{ active: section === 2 }">2. Content Type</span>
+				<span class="step" :class="{ active: section === 3 }">3. Scenes</span>
+				<span class="step" :class="{ active: section === 4 }">4. Style & Tone</span>
+				<span class="step" :class="{ active: section === 5 }">5. References</span>
+				<span class="step" :class="{ active: section === 6 }">6. Avoid</span>
+			</div>
+			<form action="/contracts" method="POST" enctype="multipart/form-data" @input="updateProgress()" @change="updateProgress()">
+				<section x-show="section === 1">
+					<h2>Parties & Price</h2>
+					<div class="role-selector">
+						<span class="label-inline">I am the *</span>
+						<label class="chip">
+							<input type="radio" name="role" value="client" x-model="role">
+							<span class="chip-label">Client</span>
+						</label>
+						<label class="chip">
+							<input type="radio" name="role" value="freelancer" x-model="role">
+							<span class="chip-label">Freelancer</span>
+						</label>
+					</div>
+					<label>
+						<span x-text="role === 'freelancer' ? 'Client Email' : 'Freelancer Email'"></span> *
+						if errors["freelancer_email"] != "" {
+							<span class="field-error">{ errors["freelancer_email"] }</span>
+						}
+						<input type="email" name="freelancer_email" required class="required-field"
+							:placeholder="role === 'freelancer' ? 'Client email' : 'Freelancer email'">
+					</label>
+					<label>
+						Title *
+						<input type="text" name="title" required class="required-field">
+					</label>
+					<label>
+						Total Price (DT) *
+						<input type="number" name="amount" min="10" step="0.001" required class="required-field">
+					</label>
+					<label>
+						Deposit Amount (DT) *
+						<input type="number" name="deposit_amount" min="1" step="0.001" required class="required-field">
+					</label>
+					<label>
+						Deadline *
+						<input type="date" name="deadline" required class="required-field">
+					</label>
+					<label>
+						Revisions *
+						<select name="revisions" required class="required-field">
+							<option value="0">0</option>
+							<option value="1">1</option>
+							<option value="2" selected>2</option>
+							<option value="3">3</option>
+						</select>
+					</label>
+				</section>
+
+				<section x-show="section === 2">
+					<h2>Content Type</h2>
+					<label class="label-inline">Content Type *</label>
+					<div class="radio-chips">
+					@radio_chip("content_type", "Facebook promo video")
+					@radio_chip("content_type", "Instagram reel")
+					@radio_chip("content_type", "YouTube intro")
+					@radio_chip("content_type", "Product showcase")
+					@radio_chip("content_type", "Logo animation")
+					@radio_chip("content_type", "Event recap")
+					@radio_chip("content_type", "Testimonial video")
+					@radio_chip("content_type", "Other")
+					</div>
+					<label class="label-inline">Duration *</label>
+					<div class="radio-chips">
+					@radio_chip("duration", "15s")
+					@radio_chip("duration", "30s")
+					@radio_chip("duration", "60s")
+					@radio_chip("duration", "2min")
+					@radio_chip("duration", "3-5min")
+					</div>
+					<label class="label-inline">Format *</label>
+					<div class="radio-chips">
+					@radio_chip("format", "MP4 16:9")
+					@radio_chip("format", "MP4 9:16 vertical")
+					@radio_chip("format", "MP4 1:1 square")
+					@radio_chip("format", "GIF")
+					</div>
+				</section>
+
+				<section x-show="section === 3">
+					<h2>Scene Breakdown</h2>
+					<p class="help-text">Describe each scene — what happens, how long, what is shown</p>
+					<div id="scenes-container">
+						<template x-for="(scene, i) in scenes" :key="i">
+							<div class="scene-input">
+								<label x-text="'Scene ' + (i + 1) + ' *'"></label>
+								<input type="text" name="scenes" class="required-field"
+									x-model="scenes[i]"
+									:placeholder="'Describe scene ' + (i + 1) + ' — what happens, how long, what is shown'">
+							</div>
+						</template>
+					</div>
+					<button type="button" class="btn btn-secondary" @click="addScene()">+ Add Scene</button>
+				</section>
+
+				<section x-show="section === 4">
+					<h2>Style & Tone</h2>
+					<label class="label-inline">Style</label>
+					<div class="checkbox-grid">
+					@checkbox("style", "Clean & minimal")
+					@checkbox("style", "Bold & energetic")
+					@checkbox("style", "Luxury & premium")
+					@checkbox("style", "Warm & natural")
+					@checkbox("style", "Funny & playful")
+					@checkbox("style", "Professional")
+					@checkbox("style", "Cinematic")
+					@checkbox("style", "Tunisian local feel")
+					</div>
+					<label class="label-inline">Language *</label>
+					<div class="radio-chips">
+					@radio_chip("language", "Arabic Tunisian")
+					@radio_chip("language", "Arabic MSA")
+					@radio_chip("language", "French")
+					@radio_chip("language", "No voice")
+					@radio_chip("language", "French+Arabic")
+					</div>
+					<label>
+						Music Preference (optional)
+						<input type="text" name="music_preference" placeholder="e.g. upbeat, cinematic, traditional">
+					</label>
+				</section>
+
+				<section x-show="section === 5">
+					<h2>References (optional)</h2>
+					<label>
+						Reference Links
+						<textarea name="reference_links" rows="4" placeholder="One link per line"></textarea>
+					</label>
+					<label>
+						Brand Assets
+						<input type="file" name="assets" multiple>
+					</label>
+				</section>
+
+				<section x-show="section === 6">
+					<h2>What to Avoid (optional)</h2>
+					<label>
+						Avoid Notes
+						<textarea name="avoid_notes" rows="4"
+							placeholder="Describe what the freelancer should avoid"></textarea>
+					</label>
+				</section>
+
+				<div class="form-nav">
+					<button type="button" class="btn btn-secondary" x-show="section > 1" @click="prevSection()">Previous</button>
+					<button type="button" class="btn btn-primary" x-show="section < 6" @click="nextSection()">Next</button>
+					<button type="submit" class="btn btn-primary" x-show="section === 6">Create Contract</button>
+				</div>
+			</form>
+		</div>
+		<script>
+			function contractForm() {
+				return {
+					section: 1,
+					role: 'client',
+					scenes: [''],
+					progress: 0,
+					nextSection() {
+						if (this.section < 6) this.section++;
+					},
+					prevSection() {
+						if (this.section > 1) this.section--;
+					},
+					addScene() {
+						this.scenes.push('');
+					},
+					updateProgress() {
+						const required = document.querySelectorAll('.required-field');
+						let filled = 0;
+						required.forEach(el => {
+							if (el.type === 'radio') {
+								const name = el.name;
+								if (document.querySelector('input[name="' + name + '"]:checked')) filled++;
+								return;
+							}
+							if (el.value.trim() !== '') filled++;
+						});
+						this.progress = required.length > 0 ? Math.round((filled / required.length) * 100) : 0;
+					}
+				}
+			}
+		</script>
+	}
+}
+
+templ radio_chip(name, value string) {
+	<label class="chip">
+		<input type="radio" name={ name } value={ value } class="required-field">
+		<span class="chip-label">{ value }</span>
+	</label>
+}
+
+templ checkbox(name, value string) {
+	<label class="chip">
+		<input type="checkbox" name={ name } value={ value }>
+		<span class="chip-label">{ value }</span>
+	</label>
+}

@@ -1,0 +1,40 @@
+package templates
+
+templ Register(errorMsg string) {
+	@Layout(nil, "Register") {
+		<div class="auth-form">
+			<h1>Create Account</h1>
+			if errorMsg != "" {
+				<div class="alert alert-error">{ errorMsg }</div>
+			}
+			<form action="/register" method="POST">
+				<label>
+					Full Name
+					<input type="text" name="name" required>
+				</label>
+				<label>
+					Email
+					<input type="email" name="email" required>
+				</label>
+				<label>
+					Phone
+					<input type="tel" name="phone" required>
+				</label>
+				<label>
+					Password
+					<input type="password" name="password" required minlength="8">
+				</label>
+				<label>
+					Confirm Password
+					<input type="password" name="confirm_password" required minlength="8">
+				</label>
+				<label>
+					Bank RIB (optional)
+					<input type="text" name="bank_account" placeholder="Tunisian RIB">
+				</label>
+				<button type="submit" class="btn btn-primary btn-full">Create Account</button>
+			</form>
+			<p class="auth-link">Already have an account? <a href="/login">Sign In</a></p>
+		</div>
+	}
+}

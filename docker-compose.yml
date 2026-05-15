@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: escrow
+      POSTGRES_USER: escrow
+      POSTGRES_PASSWORD: escrow
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U escrow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  peer0:
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      CORE_PEER_ID: peer0.escrov
+      CORE_PEER_ADDRESS: peer0:7051
+      CORE_PEER_LISTENADDRESS: 0.0.0.0:7051
+      CORE_PEER_CHAINCODELISTENADDRESS: 0.0.0.0:7052
+      CORE_PEER_GOSSIP_EXTERNALENDPOINT: peer0:7051
+      CORE_PEER_LOCALMSPID: PlatformMSP
+      CORE_PEER_TLS_ENABLED: "false"
+      CORE_LEDGER_STATE_STATEDATABASE: goleveldb
+    volumes:
+      - ./fabric/crypto:/etc/hyperledger/fabric/crypto
+      - peer0data:/var/hyperledger/production
+    ports:
+      - "7051:7051"
+      - "7052:7052"
+
+  orderer:
+    image: hyperledger/fabric-orderer:2.5
+    environment:
+      ORDERER_GENERAL_LISTENADDRESS: 0.0.0.0
+      ORDERER_GENERAL_LISTENPORT: 7050
+      ORDERER_GENERAL_LOCALMSPID: OrdererMSP
+      ORDERER_GENERAL_TLS_ENABLED: "false"
+    volumes:
+      - ./fabric/crypto:/etc/hyperledger/fabric/crypto
+      - ordererdata:/var/hyperledger/production/orderer
+    ports:
+      - "7050:7050"
+
+volumes:
+  pgdata:
+  peer0data:
+  ordererdata:

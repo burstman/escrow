@@ -1,0 +1,140 @@
+package templates
+
+import (
+	"escrow/internal/model"
+	"fmt"
+	"time"
+)
+
+type PendingPaymentItem struct {
+	ID            string
+	ContractID    string
+	ClientName    string
+	Amount        float64
+	BankReference string
+	CreatedAt     time.Time
+}
+
+type DisputeItem struct {
+	ID              string
+	Title           string
+	ClientName      string
+	FreelancerName  string
+	DisputeReason   string
+	Amount          float64
+}
+
+type CompletedItem struct {
+	ID          string
+	Title       string
+	State       string
+	CompletedAt *time.Time
+}
+
+templ AdminDashboard(payments []PendingPaymentItem, disputes []DisputeItem, completed []CompletedItem, user *model.User) {
+	@Layout(user, "Admin Dashboard") {
+		<div class="admin-dashboard">
+			<h1>Admin Dashboard</h1>
+
+			<section class="admin-section">
+				<h2>Pending Payment Confirmations</h2>
+				if len(payments) == 0 {
+					<p class="empty">No pending payments.</p>
+				} else {
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>Contract</th>
+								<th>Client</th>
+								<th>Amount</th>
+								<th>Bank Reference</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, p := range payments {
+								<tr>
+									<td><code>{ p.ContractID[:8] }...</code></td>
+									<td>{ p.ClientName }</td>
+									<td>{ formatAmount(p.Amount) }</td>
+									<td>{ p.BankReference }</td>
+									<td class="actions-cell">
+										<form action={ templ.URL(fmt.Sprintf("/admin/payments/%s/confirm", p.ID)) } method="POST" style="display:inline">
+											<button type="submit" class="btn btn-success btn-sm">Confirm</button>
+										</form>
+										<form action={ templ.URL(fmt.Sprintf("/admin/payments/%s/reject", p.ID)) } method="POST" style="display:inline">
+											<button type="submit" class="btn btn-danger btn-sm">Reject</button>
+										</form>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				}
+			</section>
+
+			<section class="admin-section">
+				<h2>Active Disputes</h2>
+				if len(disputes) == 0 {
+					<p class="empty">No active disputes.</p>
+				} else {
+					for _, d := range disputes {
+						<div class="dispute-card">
+							<div class="dispute-header">
+								<a href={ templ.URL(fmt.Sprintf("/contracts/%s", d.ID)) }>{ d.Title }</a>
+								<span class="amount">{ formatAmount(d.Amount) }</span>
+							</div>
+							<p><strong>Client:</strong> { d.ClientName } | <strong>Freelancer:</strong> { d.FreelancerName }</p>
+							<p><strong>Reason:</strong> { d.DisputeReason }</p>
+							<form action={ templ.URL(fmt.Sprintf("/admin/contracts/%s/resolve", d.ID)) } method="POST" class="resolve-form">
+								<label>
+									<input type="radio" name="decision" value="Release to freelancer" required>
+									Release to freelancer
+								</label>
+								<label>
+									<input type="radio" name="decision" value="Refund to client">
+									Refund to client
+								</label>
+								<label>
+									<input type="radio" name="decision" value="Split 50/50">
+									Split 50/50
+								</label>
+								<button type="submit" class="btn btn-primary">Resolve</button>
+							</form>
+						</div>
+					}
+				}
+			</section>
+
+			<section class="admin-section">
+				<h2>Recent Completed Contracts</h2>
+				if len(completed) == 0 {
+					<p class="empty">No completed contracts.</p>
+				} else {
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>Title</th>
+								<th>State</th>
+								<th>Completed At</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, c := range completed {
+								<tr>
+									<td><a href={ templ.URL(fmt.Sprintf("/contracts/%s", c.ID)) }>{ c.Title }</a></td>
+									<td><span class="state-badge">{ formatState(c.State) }</span></td>
+									<td>
+										if c.CompletedAt != nil {
+											{ c.CompletedAt.Format("Jan 2, 2006") }
+										}
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				}
+			</section>
+		</div>
+	}
+}

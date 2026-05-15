@@ -1,0 +1,230 @@
+package templates
+
+templ Home() {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="utf-8" />
+			<meta name="viewport" content="width=device-width, initial-scale=1" />
+			<title>Escrow.tn — Secure Escrow for Tunisian Freelancers</title>
+			<meta name="description" content="Blockchain-verified escrow for Tunisian freelancers and clients. Funds released only when both parties agree." />
+			<meta property="og:title" content="Escrow.tn — Secure Escrow for Tunisian Freelancers" />
+			<meta property="og:description" content="Blockchain-verified escrow for Tunisian freelancers and clients. Funds released only when both parties agree." />
+			<meta property="og:type" content="website" />
+
+			<link rel="preconnect" href="https://fonts.googleapis.com" />
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+			<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+
+			<link rel="stylesheet" href="/static/style.css" />
+		</head>
+		<body>
+			<!-- NAV -->
+			<header class="landing-nav">
+				<div class="landing-nav-inner">
+					<a href="/" class="landing-logo">Escrow.tn</a>
+					<nav class="landing-nav-links">
+						<a href="#how">How it works</a>
+						<a href="#services">Services</a>
+						<a href="#trust">Trust</a>
+						<a href="#faq">FAQ</a>
+					</nav>
+					<div class="landing-nav-actions">
+						<a href="/login" class="landing-login">Login</a>
+						<a href="/register" class="btn btn-primary">Register</a>
+					</div>
+				</div>
+			</header>
+
+			<!-- HERO -->
+			<section class="landing-hero">
+				<div class="landing-hero-inner">
+					<div class="landing-badge">
+						<span class="landing-dot"></span>
+						Blockchain-verified · Built for Tunisia
+					</div>
+					<h1 class="landing-title">
+						Secure Escrow for <span class="text-gradient-gold">Tunisian Freelancers</span>
+					</h1>
+					<p class="landing-subtitle">
+						Clients lock funds. Freelancers deliver video ads, voice-overs, and visuals. Money is released only when both parties agree — verified on-chain.
+					</p>
+					<div class="landing-hero-actions">
+						<a href="/register" class="btn btn-primary landing-cta">Get Started →</a>
+						<a href="/login" class="btn btn-secondary">Sign In</a>
+					</div>
+					<div class="landing-stats">
+						<div class="landing-stat">
+							<span class="landing-stat-value">0%</span>
+							<span class="landing-stat-label">risk of chargeback</span>
+						</div>
+						<div class="landing-stat">
+							<span class="landing-stat-value">100%</span>
+							<span class="landing-stat-label">on-chain proof</span>
+						</div>
+						<div class="landing-stat">
+							<span class="landing-stat-value">2-of-2</span>
+							<span class="landing-stat-label">release approval</span>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- HOW IT WORKS -->
+			<section id="how" class="landing-section landing-alt">
+				<div class="landing-section-inner">
+					<p class="landing-section-label">How it works</p>
+					<h2>Mutual agreement, on-chain.</h2>
+					<p class="landing-section-desc">
+						A simple 2-of-2 release. No middleman touches the funds — the smart contract enforces it.
+					</p>
+					<div class="landing-cards">
+						<div class="landing-card">
+							<div class="landing-card-icon">💼</div>
+							<h3>01 — Client deposits</h3>
+							<p>The client funds the contract. Money is locked in escrow on the blockchain, not held by us.</p>
+						</div>
+						<div class="landing-card">
+							<div class="landing-card-icon">🎬</div>
+							<h3>02 — Freelancer delivers</h3>
+							<p>Video ads, voice-overs, images, or any digital service — delivered through the platform.</p>
+						</div>
+						<div class="landing-card">
+							<div class="landing-card-icon">🤝</div>
+							<h3>03 — Both agree</h3>
+							<p>Client approves the final product. Freelancer confirms transfer. Funds release instantly.</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- SERVICES -->
+			<section id="services" class="landing-section">
+				<div class="landing-section-inner">
+					<div class="landing-section-header">
+						<div>
+							<p class="landing-section-label">Services</p>
+							<h2>Built for creative work.</h2>
+						</div>
+						<p class="landing-section-desc" style="max-width:28rem">
+							Every project is wrapped in an escrow contract — the freelancer ships, the client approves, the chain settles.
+						</p>
+					</div>
+					<div class="landing-grid-4">
+						<div class="landing-service-card">
+							<div class="landing-service-icon">🎥</div>
+							<h3>Video ads</h3>
+							<p>Promo, social, product reels.</p>
+						</div>
+						<div class="landing-service-card">
+							<div class="landing-service-icon">🎙️</div>
+							<h3>Voice-over</h3>
+							<p>Arabic, French, English narration.</p>
+						</div>
+						<div class="landing-service-card">
+							<div class="landing-service-icon">🖼️</div>
+							<h3>Images & design</h3>
+							<p>Branding, posters, thumbnails.</p>
+						</div>
+						<div class="landing-service-card">
+							<div class="landing-service-icon">📄</div>
+							<h3>Custom contracts</h3>
+							<p>Define milestones and deliverables.</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- TRUST -->
+			<section id="trust" class="landing-section landing-alt">
+				<div class="landing-section-inner landing-trust-grid">
+					<div>
+						<p class="landing-section-label">Trust</p>
+						<h2>Designed so neither side gets burned.</h2>
+						<p class="landing-section-desc">
+							Tunisian freelancers lose money to ghosting clients. Clients lose money to no-shows. Escrow.tn fixes both sides with one mechanism: mutual release.
+						</p>
+					</div>
+					<div class="landing-trust-list">
+						<div class="landing-trust-item">
+							<div class="landing-trust-icon">🔒</div>
+							<div>
+								<h3>Funds locked on-chain</h3>
+								<p>We never custody your money. The smart contract holds it until both sides sign off.</p>
+							</div>
+						</div>
+						<div class="landing-trust-item">
+							<div class="landing-trust-icon">🛡️</div>
+							<div>
+								<h3>Identity verified</h3>
+								<p>KYC for freelancers and clients. No anonymous walk-aways.</p>
+							</div>
+						</div>
+						<div class="landing-trust-item">
+							<div class="landing-trust-icon">⚖️</div>
+							<div>
+								<h3>Fair dispute resolution</h3>
+								<p>If parties disagree, a neutral reviewer arbitrates with on-chain evidence.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- FAQ -->
+			<section id="faq" class="landing-section">
+				<div class="landing-faq-inner">
+					<p class="landing-section-label">FAQ</p>
+					<h2>Common questions.</h2>
+					<div class="landing-faq-list">
+						<details class="landing-faq-item">
+							<summary>
+								<span>How does the blockchain part actually work?</span>
+								<span class="plus">+</span>
+							</summary>
+							<p>When a contract is created, funds are deposited into a smart contract. Release requires both client and freelancer signatures. Every action is publicly verifiable.</p>
+						</details>
+						<details class="landing-faq-item">
+							<summary>
+								<span>What payment methods are supported?</span>
+								<span class="plus">+</span>
+							</summary>
+							<p>Local bank transfer, card, and stablecoins. The on-chain layer settles in stablecoin so value stays predictable.</p>
+						</details>
+						<details class="landing-faq-item">
+							<summary>
+								<span>What if the client refuses to release the funds?</span>
+								<span class="plus">+</span>
+							</summary>
+							<p>Open a dispute. Both parties submit evidence and a neutral reviewer decides based on the original contract terms.</p>
+						</details>
+						<details class="landing-faq-item">
+							<summary>
+								<span>Who can use Escrow.tn?</span>
+								<span class="plus">+</span>
+							</summary>
+							<p>Any verified Tunisian freelancer and any client — local or international — who wants protected payments.</p>
+						</details>
+					</div>
+				</div>
+			</section>
+
+			<!-- CTA -->
+			<section class="landing-section landing-alt landing-cta-section">
+				<div class="landing-cta-box">
+					<h2>Ship work. Get paid. <span class="text-gradient-gold">Without the worry.</span></h2>
+					<p>Join the freelancers and clients already settling work on-chain.</p>
+					<a href="/register" class="btn btn-primary" style="display:inline-flex;padding:0.75rem 1.75rem">Create your first contract →</a>
+				</div>
+			</section>
+
+			<!-- FOOTER -->
+			<footer class="landing-footer">
+				<div class="landing-footer-inner">
+					<div class="landing-logo">Escrow.tn</div>
+					<p>© 2026 Escrow.tn — Secure exchanges for Tunisia.</p>
+				</div>
+			</footer>
+		</body>
+	</html>
+}

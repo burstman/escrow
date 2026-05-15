@@ -1,0 +1,24 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  cmd = """
+npx tailwindcss -i web/static/css/input.css -o web/static/style.css && templ generate && go build -o ./tmp/main ./cmd/server
+"""
+  entrypoint = ["./tmp/main"]
+  full_bin = "DEV_MODE=true ./tmp/main"
+  include_ext = ["go", "templ", "css", "js", "html"]
+  exclude_dir = ["assets", "tmp", "vendor", "testdata", "node_modules"]
+  exclude_regex = ["_test.go", "_templ.go"]
+  include_dir = ["cmd", "internal", "web/templates", "web/static"]
+  kill_delay = "1s"
+  delay = 500
+  stop_on_error = false
+  log = "build-errors.log"
+  send_interrupt = true
+
+[log]
+  time = true
+
+[screen]
+  clear_on_rebuild = true

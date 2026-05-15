@@ -1,0 +1,205 @@
+package templates
+
+import (
+	"escrow/internal/model"
+	"fmt"
+)
+
+templ ViewContract(c *model.Contract, user *model.User, fabricVerified bool, remainingHours int) {
+	@Layout(user, c.Title) {
+		<div class="contract-view">
+			<div class="contract-header">
+				<h1>{ c.Title }</h1>
+				<span class="state-badge state-{ c.State }">{ formatState(c.State) }</span>
+			</div>
+
+			<section class="contract-parties">
+				<div class="party">
+					<span class="party-label">Client</span>
+					<span class="party-name">{ c.ClientName }</span>
+				</div>
+				<div class="party">
+					<span class="party-label">Freelancer</span>
+					<span class="party-name">{ c.FreelancerName }</span>
+				</div>
+			</section>
+
+			<section class="state-timeline">
+				@StateTimeline(c.State)
+			</section>
+
+			<section class="brief-summary">
+				<h2>Brief Summary</h2>
+				<div class="brief-grid">
+					<div class="brief-item">
+						<span class="brief-label">Content Type</span>
+						<span>{ c.ContentType }</span>
+					</div>
+					<div class="brief-item">
+						<span class="brief-label">Duration</span>
+						<span>{ c.Duration }</span>
+					</div>
+					<div class="brief-item">
+						<span class="brief-label">Format</span>
+						<span>{ c.Format }</span>
+					</div>
+					<div class="brief-item">
+						<span class="brief-label">Language</span>
+						<span>{ c.Language }</span>
+					</div>
+				</div>
+				if len(c.Scenes) > 0 {
+					<h3>Scenes</h3>
+					<ol class="scene-list">
+						for i, scene := range c.Scenes {
+							<li>{ fmt.Sprintf("Scene %d: %s", i+1, scene) }</li>
+						}
+					</ol>
+				}
+			</section>
+
+			<section class="financial-summary">
+				<h2>Financial</h2>
+				<div class="financial-row">
+					<span>Total</span>
+					<span class="amount">{ formatAmount(c.Amount) }</span>
+				</div>
+				<div class="financial-row">
+					<span>Deposit</span>
+					<span class="amount">{ formatAmount(c.DepositAmount) }</span>
+				</div>
+				<div class="financial-row">
+					<span>Remaining</span>
+					<span class="amount">{ formatAmount(c.Amount - c.DepositAmount) }</span>
+				</div>
+			</section>
+
+			<section class="verification">
+				<h2>Ledger Verification</h2>
+				if fabricVerified {
+					<div class="badge badge-ok">✓ Brief verified on ledger</div>
+				} else {
+					<div class="badge badge-error">⚠ Hash mismatch</div>
+				}
+				if c.FabricTxID != nil {
+					<div class="tx-info">
+						<span class="tx-label">Ledger TX</span>
+						<code>{ *c.FabricTxID }</code>
+					</div>
+				}
+			</section>
+
+			if c.State == model.StateDelivered {
+				<section class="auto-release">
+					<h2>Auto-Release Timer</h2>
+					<div class="countdown">{ remainingHours } hours remaining</div>
+				</section>
+			}
+
+			if c.State == model.StateDisputed && c.DisputeReason != nil {
+				<section class="dispute-info">
+					<h2>Dispute</h2>
+					<p class="dispute-reason">{ *c.DisputeReason }</p>
+				</section>
+			}
+
+			<section class="contract-actions">
+				@ContractActions(c, user)
+			</section>
+		</div>
+	}
+}
+
+templ StateTimeline(currentState string) {
+	<div class="timeline">
+		for _, s := range stateTimelineStates() {
+			<div class={ templ.KV("timeline-step", true), templ.KV("active", s == currentState), templ.KV("past", isPastState(s, currentState)) }>
+				<span class="timeline-dot"></span>
+				<span class="timeline-label">{ formatState(s) }</span>
+			</div>
+		}
+	</div>
+}
+
+templ ContractActions(c *model.Contract, user *model.User) {
+	if user == nil {
+		return
+	}
+	if user.Role == "admin" {
+		<div class="actions">
+			<form action={ templ.URL(fmt.Sprintf("/contracts/%s/accept", c.ID)) } method="POST">
+				<button type="submit" class="btn btn-primary">Accept (as Admin)</button>
+			</form>
+			<form action={ templ.URL(fmt.Sprintf("/contracts/%s/approve", c.ID)) } method="POST">
+				<button type="submit" class="btn btn-primary">Approve (as Admin)</button>
+			</form>
+		</div>
+		return
+	}
+	<div class="actions">
+		if c.FreelancerID == user.ID && c.State == model.StatePendingFreelancer {
+			<form action={ templ.URL(fmt.Sprintf("/contracts/%s/accept", c.ID)) } method="POST">
+				<button type="submit" class="btn btn-primary">Accept Contract</button>
+			</form>
+		}
+		if c.ClientID == user.ID && c.State == model.StatePendingDeposit {
+			<form action={ templ.URL(fmt.Sprintf("/contracts/%s/deposit", c.ID)) } method="POST">
+				<label>Bank Transfer Reference</label>
+				<input type="text" name="bank_reference" required>
+				<button type="submit" class="btn btn-primary">Submit Payment</button>
+			</form>
+		}
+		if c.FreelancerID == user.ID && c.State == model.StateFunded {
+			<form action={ templ.URL(fmt.Sprintf("/contracts/%s/deliver", c.ID)) } method="POST" enctype="multipart/form-data">
+				<label>Upload Deliverable</label>
+				<input type="file" name="file" required>
+				<button type="submit" class="btn btn-primary">Upload</button>
+			</form>
+		}
+		if c.ClientID == user.ID && c.State == model.StateDelivered {
+			<form action={ templ.URL(fmt.Sprintf("/contracts/%s/approve", c.ID)) } method="POST" style="display:inline">
+				<button type="submit" class="btn btn-primary">Approve</button>
+			</form>
+			<form action={ templ.URL(fmt.Sprintf("/contracts/%s/revision", c.ID)) } method="POST" style="display:inline">
+				<button type="submit" class="btn btn-secondary">Request Revision</button>
+			</form>
+			<form action={ templ.URL(fmt.Sprintf("/contracts/%s/dispute", c.ID)) } method="POST" style="display:inline">
+				<label>Reason</label>
+				<input type="text" name="reason" required>
+				<button type="submit" class="btn btn-danger">Raise Dispute</button>
+			</form>
+		}
+	</div>
+}
+
+
+
+func formatState(s string) string {
+	switch s {
+	case "PENDING_FREELANCER":
+		return "Pending Freelancer"
+	case "PENDING_DEPOSIT":
+		return "Pending Deposit"
+	case "DEPOSIT_PENDING_CONFIRM":
+		return "Deposit Pending Confirmation"
+	case "FUNDED":
+		return "Funded"
+	case "DELIVERED":
+		return "Delivered"
+	case "REVISION_REQUESTED":
+		return "Revision Requested"
+	case "DISPUTED":
+		return "Disputed"
+	case "COMPLETED":
+		return "Completed"
+	case "CANCELLED":
+		return "Cancelled"
+	case "RESOLVED":
+		return "Resolved"
+	}
+	return s
+}
+
+func formatAmount(v float64) string {
+	return fmt.Sprintf("%.3f DT", v)
+}

@@ -1,0 +1,50 @@
+package templates
+
+import "escrow/internal/model"
+
+templ Layout(user *model.User, title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<title>{ title } — Escrow.tn</title>
+			<meta name="description" content="Blockchain-verified escrow for Tunisian freelancers and clients. Funds released only when both parties agree.">
+			<meta property="og:title" content="{ title } — Escrow.tn">
+			<meta property="og:description" content="Blockchain-verified escrow for Tunisian freelancers and clients. Funds released only when both parties agree.">
+			<meta property="og:type" content="website">
+
+			<link rel="preconnect" href="https://fonts.googleapis.com">
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+			<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+			<link rel="stylesheet" href="/static/style.css">
+			<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+			<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+		</head>
+		<body>
+			if user != nil {
+				<nav class="nav">
+					<div class="nav-inner">
+						<a href="/" class="nav-logo">Escrow.tn</a>
+						<div class="nav-links">
+							<a href="/dashboard">Dashboard</a>
+							<a href="/contracts/new">New Contract</a>
+							if user.Role == "admin" {
+								<a href="/admin">Admin</a>
+							}
+							<form action="/logout" method="POST" class="inline-form">
+								<button type="submit" class="btn-link">Logout</button>
+							</form>
+						</div>
+					</div>
+				</nav>
+				<main class="container">
+					{ children... }
+				</main>
+			} else {
+				{ children... }
+			}
+		</body>
+	</html>
+}
