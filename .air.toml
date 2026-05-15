@@ -3,7 +3,7 @@ tmp_dir = "tmp"
 
 [build]
   cmd = """
-npx tailwindcss -i web/static/css/input.css -o web/static/style.css && templ generate && go build -o ./tmp/main ./cmd/server
+npx tailwindcss -i web/static/css/input.css -o web/static/style.css && templ generate && go build -o ./tmp/main .
 """
   entrypoint = ["./tmp/main"]
   full_bin = "DEV_MODE=true ./tmp/main"

@@ -13,7 +13,7 @@ air:
 	air
 
 build:
-	templ generate && go build -o bin/escrow ./cmd/server
+	templ generate && go build -o bin/escrow .
 
 templ:
 	templ generate
