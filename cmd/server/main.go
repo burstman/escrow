@@ -30,6 +30,10 @@ func main() {
 	}
 	defer pool.Close()
 
+	if err := db.Migrate(ctx, pool); err != nil {
+		log.Fatalf("migrations: %v", err)
+	}
+
 	fc, err := fabric.NewClient(cfg)
 	if err != nil {
 		log.Fatalf("fabric: %v", err)

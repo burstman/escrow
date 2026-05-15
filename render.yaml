@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: escrow
+    runtime: go
+    repo: https://github.com/YOUR_USERNAME/escrow
+    plan: starter
+    buildCommand: go build -o escrow ./cmd/server
+    startCommand: ./escrow
+    healthCheckPath: /
+    envVars:
+      - key: DEV_MODE
+        value: "true"
+      - key: PORT
+        value: "8080"
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: escrow-db
+          property: connectionString
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+      - key: BUSINESS_BANK_NAME
+        sync: false
+      - key: BUSINESS_RIB
+        sync: false
+      - key: BUSINESS_ACCOUNT_NAME
+        sync: false
+
+databases:
+  - name: escrow-db
+    plan: starter
+    databaseName: escrow
+    ipAllowList: []
