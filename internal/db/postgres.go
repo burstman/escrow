@@ -5,16 +5,31 @@ import (
 	"embed"
 	"fmt"
 	"log"
+	"net/url"
 	"path"
 	"sort"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// sanitizeDatabaseURL removes unsupported query parameters (e.g. channel_binding)
+// from the database URL to avoid pgx parse errors.
+func sanitizeDatabaseURL(databaseURL string) string {
+	u, err := url.Parse(databaseURL)
+	if err != nil {
+		return databaseURL
+	}
+	q := u.Query()
+	q.Del("channel_binding")
+	u.RawQuery = q.Encode()
+	return u.String()
+}
+
 //go:embed migrations/*.sql
 var migrationsFS embed.FS
 
 func Connect(ctx context.Context, databaseURL string) (*pgxpool.Pool, error) {
+	databaseURL = sanitizeDatabaseURL(databaseURL)
 	pool, err := pgxpool.New(ctx, databaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("connect to postgres: %w", err)
