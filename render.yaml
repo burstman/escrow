@@ -2,7 +2,7 @@ services:
   - type: web
     name: escrow
     runtime: go
-    repo: https://github.com/YOUR_USERNAME/escrow
+    repo: https://github.com/burstman/escrow
     plan: starter
     startCommand: ./app
     healthCheckPath: /
@@ -14,9 +14,7 @@ services:
       - key: SESSION_SECRET
         generateValue: true
       - key: DATABASE_URL
-        fromDatabase:
-          name: escrow-db
-          property: connectionString
+        sync: false
       - key: UPLOAD_DIR
         value: /var/data/uploads
       - key: BUSINESS_BANK_NAME
@@ -26,8 +24,4 @@ services:
       - key: BUSINESS_ACCOUNT_NAME
         sync: false
 
-databases:
-  - name: escrow-db
-    plan: starter
-    databaseName: escrow
-    ipAllowList: []
+
