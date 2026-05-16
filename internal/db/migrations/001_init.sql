@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE users (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE contracts (
+CREATE TABLE IF NOT EXISTS contracts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     client_id UUID REFERENCES users(id),
     freelancer_id UUID REFERENCES users(id),
@@ -39,7 +39,7 @@ CREATE TABLE contracts (
     completed_at TIMESTAMPTZ
 );
 
-CREATE TABLE payments (
+CREATE TABLE IF NOT EXISTS payments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     contract_id UUID REFERENCES contracts(id),
     amount NUMERIC(10,3) NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE payments (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE files (
+CREATE TABLE IF NOT EXISTS files (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     contract_id UUID REFERENCES contracts(id),
     uploader_id UUID REFERENCES users(id),
@@ -64,7 +64,7 @@ CREATE TABLE files (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE sessions (
+CREATE TABLE IF NOT EXISTS sessions (
     token TEXT PRIMARY KEY,
     user_id UUID REFERENCES users(id),
     expires_at TIMESTAMPTZ NOT NULL
